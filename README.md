@@ -28,7 +28,9 @@ https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影
 其中参数tags可以包含多个以逗号分隔的标签，你可以分别选取类型和地区来进行进一步的筛选，例如选择类型为`剧情`，地区为`美国`, 那么 URL 为
 
 ```
-https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影,剧情,美国
+https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影,科幻,美国
+https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影,动作,美国
+https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影,悬疑,美国
 ```
 
 实现函数构造对应类型和地区的URL地址
