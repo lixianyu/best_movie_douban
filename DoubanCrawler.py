@@ -1,7 +1,8 @@
 import expanddouban
+import requests
 import bs4
 import csv
-import requests
+import time
 
 gMyCategory = ['科幻', '动作', '悬疑']
 gMyLocation = ['大陆', '美国', '香港', '台湾', '日本', '韩国', '英国', '法国', '德国', '意大利', '西班牙', '印度', '泰国', '俄罗斯', '伊朗', '加拿大', '澳大利亚', '爱尔兰', '瑞典', '巴西', '丹麦']
@@ -36,25 +37,16 @@ return a list of Movie objects with the given category and location.
 def getMovies(category, location):
     movieList = []
     url = getMovieUrl(category, location)
-    #html = expanddouban.getHtml(url, True, 2.4)
-    response = requests.get(url)
-    html = response.text
+    html = expanddouban.getHtml(url, True, 2.4)
     soup = bs4.BeautifulSoup(html, "html.parser")
+
     all_a = soup.find(class_="list-wp")
-    #print('all_a = {}\r\n'.format(all_a))
-    #print(type(all_a))
-    # for element in all_a.find_all("img", recursive=True):
-        # print('cover_link = {}'.format(element.get('src')))
-        # print(type(element))
+    # print('all_a = {}\r\n'.format(all_a))
+    if not all_a:
+        print('Just return because all_a is None')
+        return movieList
 
     for element in all_a.find_all("a", recursive=False):
-        # print('name = {}'.format(element.find(class_="title").get_text()))
-        # print('rate = {}'.format(element.find(class_="rate").get_text()))
-        # print('location = {}'.format(location))
-        # print('category = {}'.format(category))
-        # print('cover_link = {}'.format(element.find('img').get('src')))
-        # print('info_link = {}'.format(element.get('href')))
-        # print('....................................................................................................................................')
         name = element.find(class_="title").get_text()
         rate = element.find(class_="rate").get_text()
         cover_link = element.find('img').get('src')
@@ -63,31 +55,31 @@ def getMovies(category, location):
         movieList.append(m)
     return movieList
 
-# for test Task1
-# for cat in gMyCategory:
-#     for loc in gMyLocation:
-#         print(getMovieUrl(cat, loc))
-
-# for test Task2
-# url = "https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影,喜剧,美国"
-# html = expanddouban.getHtml(url, True, 2.4)
-# print('html = {}\n'.format(html))
-# print('type(html) = {}'.format(type(html)))
-
-# for test Task3
-# aMovie = Movie()
-# aMovie.name = 'lxy'
-# print(aMovie.name)
-
-f = open('movies.csv', 'w')
-csv_writer = csv.writer(f)
+fcsv = open('movies.csv', 'w')
+csv_writer = csv.writer(fcsv)
+fo = open('output.txt', 'w')
 for cat in gMyCategory:
+    dictL = {}
     for loc in gMyLocation:
         ms = getMovies(cat, loc)
-        if len(ms) == 0:
+        length = len(ms)
+        dictL[loc] = length
+        if length == 0:
             continue
         for movie in ms:
             csv_writer.writerow([movie.name, movie.rate, movie.location, movie.category, movie.info_link, movie.cover_link])
         time.sleep(1.9)
 
-f.close()
+    sorted_dictL = sorted(dictL, key=dictL.get, reverse=True)
+    movieCounts = 0
+    for value in dictL.values():
+        movieCounts += value
+    # print('movieCounts = {}'.format(movieCounts))
+    rate1 = (dictL[sorted_dictL[0]]/movieCounts)
+    rate2 = (dictL[sorted_dictL[1]]/movieCounts)
+    rate3 = (dictL[sorted_dictL[2]]/movieCounts)
+    outputStr = '在类别\'{}\'中，排名前三的分别是：{}、{}、{}，占比分别为：{:.2%}、{:.2%}、{:.2%}\n'.format(cat, sorted_dictL[0],sorted_dictL[1],sorted_dictL[2],rate1,rate2,rate3)
+    fo.write(outputStr)
+
+fcsv.close()
+fo.close()
