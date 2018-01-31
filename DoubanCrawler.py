@@ -2,11 +2,13 @@ import expanddouban
 import requests
 import bs4
 import csv
+import codecs
 import time
 
 gMyCategory = ['科幻', '动作', '悬疑']
 gMyLocation = ['大陆', '美国', '香港', '台湾', '日本', '韩国', '英国', '法国', '德国', '意大利', '西班牙', '印度', '泰国', '俄罗斯', '伊朗', '加拿大', '澳大利亚', '爱尔兰', '瑞典', '巴西', '丹麦']
-
+# gMyCategory = ['科幻']
+# gMyLocation = ['美国', '香港', '日本', '英国', '法国', '德国']
 class Movie(object):
     def __init__(self, name, rate, location, category, info_link, cover_link):
         self.name = name
@@ -55,9 +57,11 @@ def getMovies(category, location):
         movieList.append(m)
     return movieList
 
-fcsv = open('movies.csv', 'w')
+# fcsv = open('movies.csv', 'w')
+fcsv = codecs.open('movies.csv', 'w', 'utf_8_sig')
 csv_writer = csv.writer(fcsv)
-fo = open('output.txt', 'w')
+# fo = open('output.txt', 'w')
+fo = codecs.open('output.txt', 'w', 'utf_8_sig')
 for cat in gMyCategory:
     dictL = {}
     for loc in gMyLocation:
